@@ -7,7 +7,7 @@ use App\Http\Strategies\ProviderStrategyFactory;
 use App\Models\Provider;
 use App\Models\TimeEntry;
 
-class ProviderService
+class ProviderTimeEntryService
 {
     public function __construct(
         private ProviderStrategyFactory $factory

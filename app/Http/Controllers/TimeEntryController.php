@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\TimeEntryStoreRequest;
 use App\Http\Requests\TimeEntryUpdateRequest;
-use App\Http\Services\ProviderService;
+use App\Http\Services\ProviderTimeEntryService;
 use App\Models\TimeEntry;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TimeEntryController extends Controller
 {
-    public function __construct(private ProviderService $providerService)
+    public function __construct(private ProviderTimeEntryService $providerTimeEntryService)
     {
     }
 
@@ -51,7 +51,7 @@ class TimeEntryController extends Controller
 
         // For each provider in time entry update the data
         foreach ($timeEntry->providers as $provider) {
-            $this->providerService->update($timeEntry, $provider);
+            $this->providerTimeEntryService->update($timeEntry, $provider);
         }
 
         return Redirect::route('time-entries.index');

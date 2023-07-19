@@ -17,7 +17,7 @@ class ProviderStoreRequest extends FormRequest
     {
         return [
             'slug' => [new Enum(ProviderSlug::class)],
-            'data' => ['array'],
+            'config' => ['array'],
         ];
     }
 }

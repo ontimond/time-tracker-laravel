@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Http\Services\ProviderService;
+use App\Http\Services\ProviderTimeEntryService;
 use App\Http\Strategies\ClockifyStrategy;
 use App\Http\Strategies\ProviderStrategyFactory;
 use App\Models\Provider;
@@ -13,13 +13,15 @@ use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
-class ProviderServiceTest extends TestCase
+class ProviderTimeEntryServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function get_mocked_factory(): MockInterface
+    protected function setUp(): void
     {
-        return $this->mock(ProviderStrategyFactory::class, function (MockInterface $mock) {
+        parent::setUp();
+
+        $this->mock(ProviderStrategyFactory::class, function (MockInterface $mock) {
             $mock->shouldReceive('create')->andReturn($this->mock(ClockifyStrategy::class, function (MockInterface $mock) {
                 $mock->shouldReceive('create')->andReturn([
                     'id' => '123',
@@ -46,9 +48,9 @@ class ProviderServiceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $providerService = new ProviderService($this->get_mocked_factory());
+        $providerTimeEntryService = app(ProviderTimeEntryService::class);
 
-        $providerService->attach($timeEntry, $provider);
+        $providerTimeEntryService->attach($timeEntry, $provider);
 
         $this->assertDatabaseHas('provider_time_entry', [
             'provider_id' => $provider->id,
@@ -68,11 +70,12 @@ class ProviderServiceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $providerService = new ProviderService($this->get_mocked_factory());
 
-        $providerService->attach($timeEntry, $provider);
+        $providerTimeEntryService = app(ProviderTimeEntryService::class);
 
-        $providerService->detach($timeEntry, $provider);
+        $providerTimeEntryService->attach($timeEntry, $provider);
+
+        $providerTimeEntryService->detach($timeEntry, $provider);
 
         $this->assertDatabaseMissing('provider_time_entry', [
             'provider_id' => $provider->id,
@@ -92,10 +95,10 @@ class ProviderServiceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $providerService = new ProviderService($this->get_mocked_factory());
+        $providerTimeEntryService = app(ProviderTimeEntryService::class);
 
-        $providerService->attach($timeEntry, $provider);
-        $providerService->update($timeEntry, $provider);
+        $providerTimeEntryService->attach($timeEntry, $provider);
+        $providerTimeEntryService->update($timeEntry, $provider);
 
         $this->assertDatabaseHas('provider_time_entry', [
             'provider_id' => $provider->id,

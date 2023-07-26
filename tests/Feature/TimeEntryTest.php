@@ -7,6 +7,7 @@ use \App\Models\TimeEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Inertia\Testing\AssertableInertia as Assert;
 
 class TimeEntryTest extends TestCase
 {
@@ -32,6 +33,35 @@ class TimeEntryTest extends TestCase
             ->get('/time-entries/create');
 
         $response->assertStatus(200);
+    }
+
+    public function test_time_entries_are_ordered_by_created_at(): void
+    {
+        $user = User::factory()->create();
+
+        $timeEntry1 = TimeEntry::factory()->create([
+            'user_id' => $user->id,
+            'start' => "2021-01-01 10:00:00",
+        ]);
+
+        $timeEntry2 = TimeEntry::factory()->create([
+            'user_id' => $user->id,
+            'start' => "2021-01-02 11:00:00",
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/time-entries');
+
+        $response->assertStatus(200);
+
+        // Check that the time entries are ordered by start and grouped by day
+        $response->assertInertia(
+            fn(Assert $page) => $page
+                ->has('timeEntriesGroupedByDay', 2)
+                ->where('timeEntriesGroupedByDay.2021-01-02.0.id', $timeEntry2->id)
+                ->where('timeEntriesGroupedByDay.2021-01-01.0.id', $timeEntry1->id)
+        );
     }
 
     public function test_time_entry_can_be_created(): void

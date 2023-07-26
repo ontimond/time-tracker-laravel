@@ -64,7 +64,7 @@ class ProviderTest extends TestCase
             ->actingAs($user)
             ->get('/providers/' . $provider->id . '/edit');
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)->assertSee($provider->slug);
     }
 
     public function test_provider_can_be_updated(): void

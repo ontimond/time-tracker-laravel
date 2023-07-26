@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class TimeEntry extends Model
 {
@@ -20,6 +21,22 @@ class TimeEntry extends Model
         'start' => 'datetime',
         'stop' => 'datetime',
     ];
+
+    protected $appends = [
+        'duration',
+    ];
+
+    public function duration(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->calculateDuration()
+        );
+    }
+
+    private function calculateDuration(): int
+    {
+        return abs($this->start->getTimestamp() - ($this->stop?->getTimestamp() ?? now()->getTimestamp()));
+    }
 
     public function user()
     {

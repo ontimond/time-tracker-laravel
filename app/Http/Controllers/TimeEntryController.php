@@ -19,7 +19,7 @@ class TimeEntryController extends Controller
     public function index(Request $request)
     {
         return Inertia::render('TimeEntries/Index', [
-            'timeEntries' => $request->user()->timeEntries()->get(),
+            'timeEntriesGroupedByDay' => $request->user()->timeEntriesGroupedByDay()
         ]);
     }
 

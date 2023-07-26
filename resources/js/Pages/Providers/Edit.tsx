@@ -1,10 +1,15 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 import { Head } from "@inertiajs/react";
-import { PageProps } from "@/types";
+import { PageProps, Provider } from "@/types";
 import CreateProviderForm from "./Partials/CreateProviderForm";
+import UpdateProviderForm from "./Partials/UpdateProviderForm";
+import DeleteProviderForm from "./Partials/DeleteProviderForm";
 
-export default function Create({ auth }: PageProps) {
+export default function Edit({
+    auth,
+    provider,
+}: PageProps<{ provider: Provider }>) {
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -19,7 +24,13 @@ export default function Create({ auth }: PageProps) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                     <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                        <CreateProviderForm />
+                        <UpdateProviderForm provider={provider} />
+                    </div>
+                    <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                        <DeleteProviderForm
+                            className="max-w-xl"
+                            provider={provider}
+                        />
                     </div>
                 </div>
             </div>

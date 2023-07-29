@@ -75,9 +75,17 @@ class TogglStrategy implements ProviderStrategy
         $workspaceId = $this->provider->config['workspace_id'];
         $projectId = $this->provider->config['project_id'] ?? null;
 
+        $duration = $timeEntry->duration;
+
+        if ($timeEntry->isRunning()) {
+            // Based on toggl docs, if the time entry is running, the duration is -1
+            $duration = -1;
+        }
+
         $request = [
             'start' => $timeEntry->start,
             'stop' => $timeEntry->stop,
+            'duration' => $duration,
             'billable' => $timeEntry->billable,
             'description' => $timeEntry->description,
             'project_id' => $projectId,

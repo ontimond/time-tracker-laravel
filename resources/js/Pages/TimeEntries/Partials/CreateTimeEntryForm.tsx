@@ -8,11 +8,19 @@ import { useEffect, useState } from "react";
 export default function CreateTimeEntryForm() {
     const defaultStart = moment().format("YYYY-MM-DDTHH:mm");
     const defaultStop = moment().format("YYYY-MM-DDTHH:mm");
-    const { data, setData, post, reset } = useForm({
+
+    const { data, setData, transform, post, reset } = useForm({
         description: "",
         start: defaultStart,
         stop: defaultStop,
     });
+
+    // Transform dates to ISO format and UTC timezone
+    transform((data) => ({
+        ...data,
+        start: moment(data.start).utc().toISOString(),
+        stop: moment(data.stop).utc().toISOString(),
+    }));
 
     const [duration, setDuration] = useState(
         calculateDifferenceToHms(data.start, data.stop)
@@ -24,8 +32,6 @@ export default function CreateTimeEntryForm() {
 
     function createTimeEntry(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        data.start = moment(data.start).utc(true).toISOString();
-        data.stop = moment(data.stop).utc(true).toISOString();
         post("/time-entries", {
             onFinish: () => reset(),
         });

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Provider;
 use App\Models\User;
 use \App\Models\TimeEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,6 +63,41 @@ class TimeEntryTest extends TestCase
                 ->where('timeEntriesGroupedByDay.2021-01-02.0.id', $timeEntry2->id)
                 ->where('timeEntriesGroupedByDay.2021-01-01.0.id', $timeEntry1->id)
         );
+    }
+
+    public function test_index_includes_providers(): void
+    {
+        $user = User::factory()->create();
+
+        $provider = Provider::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $timeEntry = TimeEntry::factory()->create([
+            'user_id' => $user->id,
+            'start' => '2021-01-01 10:00:00',
+        ]);
+
+        $timeEntry->providers()->attach($provider, [
+            'data' => [
+                'description' => 'Test description'
+            ],
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/time-entries');
+
+        $response->assertStatus(200);
+
+        $response->assertInertia(
+            fn(Assert $page) => $page
+                ->has('timeEntriesGroupedByDay', 1)
+                ->where('timeEntriesGroupedByDay.2021-01-01.0.providers.0.id', $provider->id)
+                ->has('providers', 1)
+                ->where('providers.0.id', $provider->id)
+        );
+
     }
 
     public function test_time_entry_can_be_created(): void

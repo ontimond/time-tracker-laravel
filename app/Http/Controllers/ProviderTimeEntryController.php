@@ -14,13 +14,13 @@ class ProviderTimeEntryController extends Controller
     {
     }
 
-    public function attach(Provider $provider, TimeEntry $timeEntry)
+    public function attach(TimeEntry $timeEntry, Provider $provider)
     {
         $this->providerTimeEntryService->attach($timeEntry, $provider);
         return Redirect::route('time-entries.index');
     }
 
-    public function detach(Provider $provider, TimeEntry $timeEntry)
+    public function detach(TimeEntry $timeEntry, Provider $provider)
     {
         $this->providerTimeEntryService->detach($timeEntry, $provider);
 

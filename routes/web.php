@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProviderController;
+use App\Http\Controllers\ProviderTimeEntryController;
 use App\Http\Controllers\TimeEntryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -55,5 +56,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/time-entries/{timeEntry}', [TimeEntryController::class, 'update'])->name('time-entries.update');
     Route::delete('/time-entries/{timeEntry}', [TimeEntryController::class, 'destroy'])->name('time-entries.destroy');
 });
+
+
+Route::middleware('auth')->group(function () {
+    Route::post('/time-entries/{timeEntry}/providers/{provider}/attach', [ProviderTimeEntryController::class, 'attach'])->name('time-entries.providers.attach');
+    Route::post('/time-entries/{timeEntry}/providers/{provider}/detach', [ProviderTimeEntryController::class, 'detach'])->name('time-entries.providers.detach');
+});
+
 
 require __DIR__ . '/auth.php';

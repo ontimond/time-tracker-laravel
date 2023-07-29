@@ -7,7 +7,7 @@ use App\Models\TimeEntry;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class ClockifyStrategy implements ProviderStrategy
+class TogglStrategy implements ProviderStrategy
 {
     private PendingRequest $client;
 
@@ -15,26 +15,30 @@ class ClockifyStrategy implements ProviderStrategy
     {
         $this->client = Http::withHeaders([
             'Content-Type' => 'application/json',
-            'X-Api-Key' => $provider->config['api_key']
-        ])->baseUrl('https://api.clockify.me/api/v1');
+
+        ])
+            ->withBasicAuth($provider->config['api_token'], 'api_token')
+            ->baseUrl('https://api.track.toggl.com/api/v9');
     }
 
     public function get(TimeEntry $timeEntry): array
     {
-        $data = $timeEntry->getProviderData($this->provider->id);
-        $workspaceId = $this->provider->config['workspace_id'];
+        // $data = $timeEntry->getProviderData($this->provider->id);
+        // $workspaceId = $this->provider->config['workspace_id'];
 
-        $response = $this->client->get("workspaces/$workspaceId/time-entries/{$data['id']}");
+        // $response = $this->client->get("workspaces/$workspaceId/time-entries/{$data['id']}");
 
-        if ($response->status() === 404) {
-            throw new \Exception('Time entry not found');
-        }
+        // if ($response->status() === 404) {
+        //     throw new \Exception('Time entry not found');
+        // }
 
-        // Get the data from the response
-        $data = $response->json();
+        // // Get the data from the response
+        // $data = $response->json();
 
-        // Return the data in the format we want
-        return $data;
+        // // Return the data in the format we want
+        // return $data;
+
+        throw new \Exception('Not implemented');
     }
 
     public function create(TimeEntry $timeEntry): array
@@ -44,19 +48,23 @@ class ClockifyStrategy implements ProviderStrategy
 
         $request = [
             'start' => $timeEntry->start,
-            'end' => $timeEntry->stop,
+            'stop' => $timeEntry->stop,
             'billable' => $timeEntry->billable,
             'description' => $timeEntry->description,
-            'projectId' => $projectId
+            'project_id' => $projectId,
+            'workspace_id' => $workspaceId,
+            // Required also in the request body for some reason
+            'created_with' => 'Time Tracker'
         ];
 
-        $response = $this->client->post("workspaces/$workspaceId/time-entries", $request);
+        $response = $this->client->post("workspaces/$workspaceId/time_entries", $request);
 
-        if ($response->status() !== 201) {
+        if ($response->status() !== 200) {
             throw new \Exception('Time entry not created');
         }
 
         $data = $response->json();
+
 
         return $data;
     }
@@ -69,13 +77,14 @@ class ClockifyStrategy implements ProviderStrategy
 
         $request = [
             'start' => $timeEntry->start,
-            'end' => $timeEntry->stop,
+            'stop' => $timeEntry->stop,
             'billable' => $timeEntry->billable,
             'description' => $timeEntry->description,
-            'projectId' => $projectId
+            'project_id' => $projectId,
+            'workspace_id' => $workspaceId, // Required also in the request body for some reason
         ];
 
-        $response = $this->client->put("workspaces/$workspaceId/time-entries/{$data['id']}", $request);
+        $response = $this->client->put("workspaces/$workspaceId/time_entries/{$data['id']}", $request);
 
         $data = $response->json();
 
@@ -87,7 +96,7 @@ class ClockifyStrategy implements ProviderStrategy
         $data = $timeEntry->getProviderData($this->provider->id);
         $workspaceId = $this->provider->config['workspace_id'];
 
-        $response = $this->client->delete("workspaces/$workspaceId/time-entries/{$data['id']}");
+        $response = $this->client->delete("workspaces/$workspaceId/time_entries/{$data['id']}");
 
         if ($response->status() === 404) {
             throw new \Exception('Time entry not found');

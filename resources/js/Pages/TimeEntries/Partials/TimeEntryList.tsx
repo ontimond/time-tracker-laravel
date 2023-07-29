@@ -1,23 +1,37 @@
-import { TimeEntry } from "@/types";
+import { Provider, TimeEntry } from "@/types";
+import moment from "moment";
+import { useEffect, useState } from "react";
 import TimeEntryItem from "./TimeEntryItem";
 import {
+    calculateDifferenceFromNow,
     calculateTotalDurationToHms,
+    isEntryRunning,
     isSomeEntryRunning,
     parseToCalendarFromNow,
 } from "./utils";
+import React from "react";
 
-export default function TimeEntryList({
-    timeEntries,
+function TimeEntryList({
+    timeEntries: _timeEntries,
+    providers,
     className = "",
     day,
 }: {
     className?: string;
     timeEntries: TimeEntry[];
+    providers: Provider[];
     day: string;
 }) {
-    const totalDurationHms = calculateTotalDurationToHms(timeEntries);
+    const [timeEntries, setTimeEntries] = useState(_timeEntries);
+    const [totalDurationHms, setTotalDurationHms] = useState(
+        calculateTotalDurationToHms(timeEntries)
+    );
     const dayFromNow = parseToCalendarFromNow(day);
     const isRunning = isSomeEntryRunning(timeEntries);
+
+    useEffect(() => {
+        setTimeEntries(_timeEntries);
+    }, [_timeEntries]);
 
     return (
         <section className={"divide-y" + className}>
@@ -25,10 +39,7 @@ export default function TimeEntryList({
                 <h2 className="font-bold pr-3">{dayFromNow}</h2>
                 <p
                     className={
-                        "pl-3 " +
-                        (isRunning
-                            ? "text-blue-500 font-bold animate-pulse"
-                            : "")
+                        "pl-3 " + (isRunning ? "text-blue-500 font-bold" : "")
                     }
                 >
                     {totalDurationHms}
@@ -40,9 +51,15 @@ export default function TimeEntryList({
                 }
             >
                 {timeEntries.map((timeEntry) => (
-                    <TimeEntryItem key={timeEntry.id} timeEntry={timeEntry} />
+                    <TimeEntryItem
+                        key={timeEntry.id}
+                        timeEntry={timeEntry}
+                        providers={providers}
+                    />
                 ))}
             </ul>
         </section>
     );
 }
+
+export default React.memo(TimeEntryList);

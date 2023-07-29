@@ -19,7 +19,8 @@ class TimeEntryController extends Controller
     public function index(Request $request)
     {
         return Inertia::render('TimeEntries/Index', [
-            'timeEntriesGroupedByDay' => $request->user()->timeEntriesGroupedByDay()
+            'timeEntriesGroupedByDay' => $request->user()->timeEntriesGroupedByDay(),
+            'providers' => $request->user()->providers,
         ]);
     }
 
@@ -59,6 +60,10 @@ class TimeEntryController extends Controller
 
     public function destroy(TimeEntry $timeEntry)
     {
+        foreach ($timeEntry->providers as $provider) {
+            $this->providerTimeEntryService->destroy($timeEntry, $provider);
+        }
+
         $timeEntry->delete();
 
         return Redirect::route('time-entries.index');

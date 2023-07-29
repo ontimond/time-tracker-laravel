@@ -13,7 +13,8 @@ class ProviderStrategyFactory
         switch ($provider->slug) {
             case ProviderSlug::Clockify:
                 return new ClockifyStrategy($provider);
-            // Agrega más casos según sea necesario
+            case ProviderSlug::Toggl:
+                return new TogglStrategy($provider);
             default:
                 throw new \InvalidArgumentException("Invalid provider slug: {$provider->slug}");
         }

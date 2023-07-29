@@ -24,8 +24,13 @@ export default function CreateProviderForm({
     } = useForm({
         slug: defaultProviders.clockify.slug,
         config: {
+            // Clockify
             api_key: "",
-            workspace_id: "",
+            // Toggl
+            api_token: "",
+
+            workspace_id: "" as string | number,
+            project_id: "" as string | number,
         },
     });
 
@@ -89,6 +94,83 @@ export default function CreateProviderForm({
                                     setData("config", {
                                         ...data.config,
                                         workspace_id: e.target.value,
+                                    })
+                                }
+                                type="text"
+                                className="mt-1 block w-full"
+                            />
+                        </div>
+                        <div>
+                            <InputLabel
+                                htmlFor="clockify_project_id"
+                                value="Project Id"
+                            />
+                            <TextInput
+                                id="clockify_project_id"
+                                value={data.config.project_id}
+                                onChange={(e) =>
+                                    setData("config", {
+                                        ...data.config,
+                                        project_id: e.target.value,
+                                    })
+                                }
+                                type="text"
+                                className="mt-1 block w-full"
+                            />
+                        </div>
+                    </>
+                )}
+
+                {defaultProviders.toggl.slug === data.slug && (
+                    <>
+                        <div>
+                            <InputLabel
+                                htmlFor="toggl_api_token"
+                                value="Api token"
+                            />
+                            <TextInput
+                                id="toggl_api_token"
+                                value={data.config.api_token}
+                                onChange={(e) =>
+                                    setData("config", {
+                                        ...data.config,
+                                        api_token: e.target.value,
+                                    })
+                                }
+                                type="text"
+                                className="mt-1 block w-full"
+                            />
+                        </div>
+                        <div>
+                            <InputLabel
+                                htmlFor="toggl_workspace_id"
+                                value="Workspace Id"
+                            />
+                            <TextInput
+                                id="toggl_workspace_id"
+                                value={data.config.workspace_id}
+                                onChange={(e) =>
+                                    setData("config", {
+                                        ...data.config,
+                                        workspace_id: parseInt(e.target.value),
+                                    })
+                                }
+                                type="text"
+                                className="mt-1 block w-full"
+                            />
+                        </div>
+                        <div>
+                            <InputLabel
+                                htmlFor="toggl_project_id"
+                                value="Project Id"
+                            />
+                            <TextInput
+                                id="toggl_project_id"
+                                value={data.config.project_id}
+                                onChange={(e) =>
+                                    setData("config", {
+                                        ...data.config,
+                                        project_id: parseInt(e.target.value),
                                     })
                                 }
                                 type="text"

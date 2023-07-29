@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use JamesMills\LaravelTimezone\Facades\Timezone;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -52,7 +53,7 @@ class User extends Authenticatable
     public function timeEntriesGroupedByDay()
     {
         return $this->timeEntries()->get()->groupBy(function ($timeEntry) {
-            return $timeEntry->start->format('Y-m-d');
+            return Timezone::convertToLocal($timeEntry->start, 'Y-m-d');
         })->sortKeysDesc();
     }
 

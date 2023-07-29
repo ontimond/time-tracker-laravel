@@ -1,15 +1,22 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
-import { Head, Link } from "@inertiajs/react";
 import { PageProps, Provider, TimeEntry } from "@/types";
-import PrimaryButton from "@/Components/PrimaryButton";
-import TimeEntryList from "./Partials/TimeEntryList";
+import { Head } from "@inertiajs/react";
 import CreateTimeEntryForm from "./Partials/CreateTimeEntryForm";
+import TimeEntryList from "./Partials/TimeEntryList";
+
+type IndexProps = {
+    timeEntriesGroupedByDay: {
+        [key: string]: TimeEntry[];
+    };
+    providers: Provider[];
+};
 
 export default function Index({
     auth,
     timeEntriesGroupedByDay,
-}: PageProps<{ timeEntriesGroupedByDay: { [key: string]: TimeEntry[] } }>) {
+    providers,
+}: PageProps<IndexProps>) {
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -50,6 +57,7 @@ export default function Index({
                             <TimeEntryList
                                 day={day}
                                 timeEntries={timeEntriesGroupedByDay[day]}
+                                providers={providers}
                             />
                         </div>
                     ))}

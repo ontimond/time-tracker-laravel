@@ -48,4 +48,15 @@ class ProviderTimeEntryService
         });
     }
 
+    public function destroy(TimeEntry $timeEntry, Provider $provider): void
+    {
+        // In case of an exception, the relation will not be deleted
+        DB::transaction(function () use ($timeEntry, $provider) {
+            $strategy = $this->factory->create($provider);
+            $strategy->delete($timeEntry);
+
+            $timeEntry->providers()->detach($provider->id);
+        });
+    }
+
 }

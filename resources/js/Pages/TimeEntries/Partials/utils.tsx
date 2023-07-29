@@ -1,5 +1,5 @@
 import { TimeEntry } from "@/types";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import momentDurationFormatSetup from "moment-duration-format";
 
 momentDurationFormatSetup(
@@ -24,10 +24,29 @@ export function calculateTotalDurationToHms(timeEntries: TimeEntry[]) {
     return totalInHms;
 }
 
-export function calculateDifferenceToHms(start: string, stop: string) {
-    const difference = moment(stop).diff(moment(start), "seconds");
+export function calculateDifferenceToHms(start: string, stop: string | Moment) {
+    const difference = calculateDifference(start, stop);
     const differenceInHms = parseSecondsToHms(difference);
     return differenceInHms;
+}
+
+export function calculateDifferenceFromNowToHms(start: string) {
+    const difference = calculateDifferenceFromNow(start);
+    const differenceInHms = parseSecondsToHms(difference);
+    return differenceInHms;
+}
+
+export function calculateDifferenceFromNow(start: string) {
+    const difference = calculateDifference(start, moment());
+    return difference;
+}
+
+export function calculateDifference(
+    start: string | Moment,
+    stop: string | Moment
+) {
+    const difference = moment(stop).diff(moment(start), "seconds");
+    return difference;
 }
 
 export function parseSecondsToHms(seconds: number): string {
@@ -41,7 +60,7 @@ export function parseDateToHmsOrNow(any?: any): string {
 }
 
 export function parseDateToHms(any?: any): string {
-    return moment.utc(any).format("HH:mm:ss");
+    return moment(any).format("HH:mm:ss");
 }
 
 export function parseDateToLt(any?: any): string {
@@ -60,6 +79,10 @@ function sumDurations(timeEntries: TimeEntry[]): number {
 
 export function isSomeEntryRunning(timeEntries: TimeEntry[]): boolean {
     return timeEntries.some((timeEntry) => isEntryRunning(timeEntry));
+}
+
+export function findEntriesRunning(timeEntries: TimeEntry[]): TimeEntry[] {
+    return timeEntries.filter((timeEntry) => isEntryRunning(timeEntry));
 }
 
 export function isEntryRunning(timeEntry: TimeEntry): boolean {

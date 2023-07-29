@@ -20,10 +20,15 @@ class TimeEntry extends Model
     protected $casts = [
         'start' => 'datetime',
         'stop' => 'datetime',
+        'billable' => 'boolean'
     ];
 
     protected $appends = [
         'duration',
+    ];
+
+    protected $with = [
+        'providers',
     ];
 
     public function duration(): Attribute

@@ -17,6 +17,7 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import React from "react";
 import PrimaryButton from "@/Components/PrimaryButton";
+import { defaultProviders } from "@/Pages/Providers/defaultProviders";
 
 type TimeEntryProps = {
     timeEntry: TimeEntry;
@@ -146,13 +147,22 @@ function TimEntry({ timeEntry, providers }: TimeEntryProps) {
 
             <Popover>
                 <Popover.Trigger>
-                    <div className="px-3">
+                    <div className="px-3 flex space-x-1">
                         {timeEntry.providers.length > 0 ? (
                             timeEntry.providers.map((provider) => (
                                 <span
                                     key={provider.id}
-                                    className="bg-sky-100 hover:bg-sky-300 py-1 px-2 rounded-full cursor-pointer text-sm font-bold"
+                                    className={
+                                        "flex items-center py-1 px-2 rounded-full cursor-pointer text-sm font-bold capitalize " +
+                                        defaultProviders[provider.slug].color
+                                    }
                                 >
+                                    <img
+                                        src={
+                                            defaultProviders[provider.slug].icon
+                                        }
+                                        className="w-3 inline-block mr-1"
+                                    />
                                     {provider.slug}
                                 </span>
                             ))
@@ -166,9 +176,12 @@ function TimEntry({ timeEntry, providers }: TimeEntryProps) {
                         {providers.map((provider) => (
                             <li key={provider.id}>
                                 <button
-                                    className="w-full text-left px-3 py-2 hover:bg-gray-100"
+                                    className="w-full text-left px-3 py-1 hover:bg-gray-100"
                                     onClick={() => toggleProvider(provider)}
                                 >
+                                    {isProviderAlreadyAdded(provider) && (
+                                        <>✓ </>
+                                    )}
                                     {provider.slug}
                                 </button>
                             </li>

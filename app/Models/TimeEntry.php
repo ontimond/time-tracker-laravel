@@ -43,6 +43,11 @@ class TimeEntry extends Model
         return abs($this->start->getTimestamp() - ($this->stop?->getTimestamp() ?? now()->getTimestamp()));
     }
 
+    public function isRunning(): bool
+    {
+        return $this->stop === null;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

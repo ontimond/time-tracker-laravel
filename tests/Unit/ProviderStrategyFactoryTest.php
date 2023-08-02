@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
 use App\Http\Strategies\ClockifyStrategy;
 use App\Http\Strategies\ProviderStrategyFactory;
@@ -8,7 +8,6 @@ use App\Models\Provider;
 use App\Models\ProviderSlug;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ProviderStrategyFactoryTest extends TestCase
